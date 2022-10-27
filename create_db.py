@@ -27,8 +27,8 @@ cur.execute("""CREATE TABLE IF NOT EXISTS writable_by (
                     blob_id INTEGER NOT NULL,
                     user_id INTEGER NOT NULL,
                     PRIMARY KEY(blob_id, user_id),
-                    FOREIGN KEY(blob_id) REFERENCES blob(blob_id)
-                    FOREIGN KEY(user_id) REFERENCES user(user_id)
+                    FOREIGN KEY(blob_id) REFERENCES blob(blob_id) ON DELETE CASCADE
+                    FOREIGN KEY(user_id) REFERENCES user(user_id) ON DELETE CASCADE
                );"""
            )
 
@@ -36,10 +36,13 @@ cur.execute("""CREATE TABLE IF NOT EXISTS readable_by (
                     blob_id INTEGER NOT NULL,
                     user_id INTEGER NOT NULL,
                     PRIMARY KEY(blob_id, user_id),
-                    FOREIGN KEY(blob_id) REFERENCES blob(blob_id)
-                    FOREIGN KEY(user_id) REFERENCES user(user_id)
+                    FOREIGN KEY(blob_id) REFERENCES blob(blob_id) ON DELETE CASCADE
+                    FOREIGN KEY(user_id) REFERENCES user(user_id) ON DELETE CASCADE
                );"""
            )
+
+cur.execute("PRAGMA foreign_keys=on")
+cur.execute("PRAGMA foreign_keys")
 
 
 
