@@ -12,6 +12,7 @@ class BlobService:
     def new_blob(self, local_filename, user):
         '''Crea un nuevo blob usando el usuario establecido'''
         con = sqlite3.connect(FILEPATH)
+        cur.execute("PRAGMA foreign_keys=on")
         cur = con.cursor()
 
         cur.execute("SELECT * FROM user WHERE user_id = ?", (user,))
@@ -21,6 +22,8 @@ class BlobService:
             #raise UserDontExist()
             return 0
 
+        #Check_location?
+
         cur.execute("INSERT OR IGNORE INTO blob(blob_location) VALUES (?)", (local_filename,))
 
         con.commit()
@@ -29,11 +32,55 @@ class BlobService:
 
     def get_blob(self, blob_id, user):
         '''Obtiene un blob usando el usuario indicado'''
-        raise NotImplementedError()
+        con = sqlite3.connect(FILEPATH)
+        cur.execute("PRAGMA foreign_keys=on")
+        cur = con.cursor()
+
+        cur.execute("SELECT * FROM user WHERE user_id = ?", (user,))
+        result = cur.fetchall()
+
+        if not result:
+            #raise UserDontExist()
+            return 0
+
+        cur.execute("SELECT * FROM blob WHERE blob_id = ?", (blob_id,))
+
+        result = cur.fetchall()
+
+        if not result:
+            #raise BlobIdWrong()
+            return 0
+        else:
+            return result[0]
+
+        #raise NotImplementedError()
 
     def remove_blob(self, blob_id, user):
         '''Intenta eliminar un blob usando el usuario dado'''
-        raise NotImplementedError()
+        con = sqlite3.connect(FILEPATH)
+        cur.execute("PRAGMA foreign_keys=on")
+        cur = con.cursor()
+
+        cur.execute("SELECT * FROM user WHERE user_id = ?", (user,))
+        result = cur.fetchall()
+
+        if not result:
+            #raise UserDontExist()
+            return 0
+
+        cur.execute("SELECT * FROM blob WHERE blob_id = ?", (blob_id,))
+
+        result = cur.fetchall()
+
+        if not result:
+            #raise BlobIdWrong()
+            return 0
+
+        cur.execute("DELETE FROM blob WHERE blob_id = ?", (blob_id,))
+        
+        con.commit()
+
+        #raise NotImplementedError()
 
 
 class Blob:
