@@ -8,7 +8,9 @@ import os.path
 
 DICT_TOKENS = {"token-prueba": '1'}
 
-def routeApp(app, DATABASE):
+def routeApp(app, DATABASE, authServer_url):
+
+    #auth_server = AuthService(authServer_url)
 
     @app.route('/v1/blob/<blob_id>', methods=['PUT'])
     def create_blob(blob_id):
@@ -146,3 +148,113 @@ def routeApp(app, DATABASE):
         directory, filename = os.path.split(file_abspath)
 
         return send_from_directory(path=filename, directory=f'{directory}/')
+
+    @app.route('/v1/blob/<blob_id>/writable_by/<user>', methods=['PUT'])
+    def add_wPermission_blob(blob_id, user):
+        if "user-token" in request.headers:
+            token = request.headers["user-token"]
+        if "admin-token" in request.headers:
+            token = request.headers["admin-token"]
+        if token is None:
+            return make_response("Not 'user-token' or 'admin-token' found in header.", 401)
+
+        #validate token
+
+        if not request.is_json:
+            return make_response('Missing JSON', 400)
+
+        #token_id = AuthService.user_of_token(token)
+
+        if not DATABASE.has_wPermission(token_id, blob_id):
+            return make_response(f"User doesn't have writable_by permission.", 404)
+
+        if DATABASE.has_wPermission(user, blob_id):
+            return make_response(f"{user} already has writable_by privilege.", 204)
+
+        try:
+            res_db = DATABASE.add_wPermission(blob_id, user)
+        except WrongBlobId:
+            return make_response(f"Blob not found", 404)
+
+        return make_response(f"Added writable permission to {user} for {blob_id}", 200)
+
+    @app.route('/v1/blob/<blob_id>/writable_by/<user>', methods=['DELETE'])
+    def remove_wPermission_blob(blob_id, user):
+        if "user-token" in request.headers:
+            token = request.headers["user-token"]
+        if "admin-token" in request.headers:
+            token = request.headers["admin-token"]
+        if token is None:
+            return make_response("Not 'user-token' or 'admin-token' found in header.", 401)
+
+        #validate token
+
+        if not request.is_json:
+            return make_response('Missing JSON', 400)
+
+        #token_id = AuthService.user_of_token(token)
+
+        if not DATABASE.has_wPermission(token_id, blob_id):
+            return make_response(f"User doesn't have writable_by permission.", 404)
+
+        try:
+            res_db = DATABASE.remove_wPermission(blob_id, user)
+        except WrongBlobId:
+            return make_response(f"Blob not found", 404)
+
+        return make_response(f"Removed writable_by permission to {user} for {blob_id}", 200)
+
+    @app.route('/v1/blob/<blob_id>/readable_by/<user>', methods=['PUT'])
+    def add_rPermission_blob(blob_id, user):
+        if "user-token" in request.headers:
+            token = request.headers["user-token"]
+        if "admin-token" in request.headers:
+            token = request.headers["admin-token"]
+        if token is None:
+            return make_response("Not 'user-token' or 'admin-token' found in header.", 401)
+
+        #validate token
+
+        if not request.is_json:
+            return make_response('Missing JSON', 400)
+
+        #token_id = AuthService.user_of_token(token)
+
+        if not DATABASE.has_wPermission(token_id, blob_id):
+            return make_response(f"User doesn't have writable_by permission.", 404)
+
+        if DATABASE.has_rPermission(user, blob_id):
+            return make_response(f"{user} already has readable_by privilege.", 204)
+
+        try:
+            res_db = DATABASE.add_rPermission(blob_id, user)
+        except WrongBlobId:
+            return make_response(f"Blob not found", 404)
+
+        return make_response(f"Added readable permission to {user} for {blob_id}", 200)
+
+    @app.route('/v1/blob/<blob_id>/readable_by/<user>', methods=['DELETE'])
+    def remove_rPermission_blob(blob_id, user):
+        if "user-token" in request.headers:
+            token = request.headers["user-token"]
+        if "admin-token" in request.headers:
+            token = request.headers["admin-token"]
+        if token is None:
+            return make_response("Not 'user-token' or 'admin-token' found in header.", 401)
+
+        #validate token
+
+        if not request.is_json:
+            return make_response('Missing JSON', 400)
+
+        #token_id = AuthService.user_of_token(token)
+
+        if not DATABASE.has_wPermission(token_id, blob_id):
+            return make_response(f"User doesn't have writable_by permission.", 404)
+
+        try:
+            res_db = DATABASE.remove_rPermission(blob_id, user)
+        except WrongBlobId:
+            return make_response(f"Blob not found", 404)
+
+        return make_response(f"Removed readable_by permission to {user} for {blob_id}", 200)

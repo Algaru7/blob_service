@@ -115,7 +115,15 @@ class Blob:
     @property
     def is_online(self):
         '''Comprueba si el blob existe'''
-        raise NotImplementedError()
+        if self.service is None:
+            return 0
+        try:
+            self.service.get_blob(self.id, self.user)
+        except DataBaseError:
+            return 0
+        return 1
+
+        #raise NotImplementedError()
 
     def dump_to(self, local_filename):
         '''Vuelca los datos del blob en un archivo local'''
@@ -159,16 +167,80 @@ class Blob:
 
     def add_read_permission_to(self, user):
         '''Permite al usuario dado leer el blob'''
-        raise NotImplementedError()
+        if not isinstance(user, str):
+            raise ValueError("user must be a string")
+
+        result = requests.put(f'{self.root}v1/blob/{self.id}/readable_by/{user}',
+                              headers = HEADERS,
+                              timeout = self.timeout
+                             )
+        
+        if result.status_code == 404:
+            raise DataBaseError(f"Blob '{self.id}' does not exist.")
+        if result.status_code == 401:
+            raise DataBaseError(f"User '{user}' is not authorized.")
+        if result.status_code == 204:
+            raise DataBaseError(f"User '{user} already has read permission.")
+        if result.status_code != 200:
+            raise DataBaseError(f'Unexpected status code: {result.status_code}.')
+        
+        #raise NotImplementedError()
 
     def revoke_read_permission_to(self, user):
         '''Elimina al usuario dado de la lista de permiso de lectura'''
-        raise NotImplementedError()
+        if not isinstance(user, str):
+            raise ValueError("user must be a string")
+
+        result = requests.delete(f'{self.root}v1/blob/{self.id}/readable_by/{user}',
+                              headers = HEADERS,
+                              timeout = self.timeout
+                             )
+        
+        if result.status_code == 404:
+            raise DataBaseError(f"Blob '{self.id}' does not exist or doesn't have read permission.")
+        if result.status_code == 401:
+            raise DataBaseError(f"User '{user}' is not authorized.")
+        if result.status_code != 204:
+            raise DataBaseError(f'Unexpected status code: {result.status_code}.')
+
+        #raise NotImplementedError()
 
     def add_write_permission_to(self, user):
         '''Permite al usuario dado escribir el blob'''
-        raise NotImplementedError()
+        if not isinstance(user, str):
+            raise ValueError("user must be a string")
+
+        result = requests.put(f'{self.root}v1/blob/{self.id}/writable_by/{user}',
+                              headers = HEADERS,
+                              timeout = self.timeout
+                             )
+        
+        if result.status_code == 404:
+            raise DataBaseError(f"Blob '{self.id}' does not exist.")
+        if result.status_code == 401:
+            raise DataBaseError(f"User '{user}' is not authorized.")
+        if result.status_code == 204:
+            raise DataBaseError(f"User '{user} already has write permission.")
+        if result.status_code != 200:
+            raise DataBaseError(f'Unexpected status code: {result.status_code}.')
+
+        #raise NotImplementedError()
 
     def revoke_write_permission_to(self, user):
         '''Elimina al usuario dado de la lista de permiso de escritura'''
-        raise NotImplementedError()
+        if not isinstance(user, str):
+            raise ValueError("user must be a string")
+
+        result = requests.delete(f'{self.root}v1/blob/{self.id}/writable_by/{user}',
+                              headers = HEADERS,
+                              timeout = self.timeout
+                             )
+        
+        if result.status_code == 404:
+            raise DataBaseError(f"Blob '{self.id}' does not exist or doesn't have write permission.")
+        if result.status_code == 401:
+            raise DataBaseError(f"User '{user}' is not authorized.")
+        if result.status_code != 204:
+            raise DataBaseError(f'Unexpected status code: {result.status_code}.')
+
+        #raise NotImplementedError()
