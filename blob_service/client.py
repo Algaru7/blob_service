@@ -71,7 +71,7 @@ class BlobService:
         if result.status_code == 404:
             raise DataBaseError(f"Blob '{blob_id}' does not exists.")
         if result.status_code == 401:
-            raise DataBaseError(f"User '{user}' is not authorized.")
+            raise DataBaseError(f"User is not authorized.")
         if result.status_code != 200:
             raise DataBaseError(f'Unexpected status code: {result.status_code}.')
 
@@ -138,7 +138,7 @@ class Blob:
         if result.getcode() == 404:
             raise DataBaseError(f"Blob '{self.id}' does not exists.")
         if result.getcode() == 401:
-            raise DataBaseError(f"User '{self.user}' is not authorized.")
+            raise DataBaseError(f"User is not authorized.")
         if result.getcode()!= 200:
             raise DataBaseError(f'Unexpected status code: {result.getcode()}.')
 
@@ -183,7 +183,7 @@ class Blob:
         if result.status_code == 404:
             raise DataBaseError(f"Blob '{self.id}' does not exist.")
         if result.status_code == 401:
-            raise DataBaseError(f"User '{user}' is not authorized.")
+            raise DataBaseError(f"User is not authorized.")
         if result.status_code == 204:
             raise DataBaseError(f"User '{user} already has read permission.")
         if result.status_code != 200:
@@ -204,7 +204,7 @@ class Blob:
         if result.status_code == 404:
             raise DataBaseError(f"Blob '{self.id}' does not exist or doesn't have read permission.")
         if result.status_code == 401:
-            raise DataBaseError(f"User '{user}' is not authorized.")
+            raise DataBaseError(f"User is not authorized.")
         if result.status_code != 204:
             raise DataBaseError(f'Unexpected status code: {result.status_code}.')
 
@@ -223,7 +223,7 @@ class Blob:
         if result.status_code == 404:
             raise DataBaseError(f"Blob '{self.id}' does not exist.")
         if result.status_code == 401:
-            raise DataBaseError(f"User '{user}' is not authorized.")
+            raise DataBaseError(f"User is not authorized.")
         if result.status_code == 204:
             raise DataBaseError(f"User '{user} already has write permission.")
         if result.status_code != 200:
