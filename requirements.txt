@@ -1,0 +1,4 @@
+Flask==2.2.2
+requests==2.22.0
+requests_toolbelt==0.10.1
+setuptools==45.2.0
