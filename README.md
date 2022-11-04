@@ -2,7 +2,9 @@
 
 ## Authors
 
-Alejandro Gálvez Ruiz
+-   Alejandro Gálvez Ruiz - [Alejandro.Galvez\@alu.uclm.es](mailto:Alejandro.Galvez@alu.uclm.es)
+-   Luis Javier Horcajada Torres - [LuisJavier.Horcajada\@alu.uclm.es](mailto:LuisJavier.Horcajada@alu.uclm.es)
+
 
 ## Execution
 
