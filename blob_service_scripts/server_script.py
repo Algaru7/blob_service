@@ -12,7 +12,7 @@ from blob_service.database import DataBase
 def main():
     '''Entry point'''
     app = Flask("database")
-    routeApp(app, DataBase())
+    routeApp(app, DataBase("./dataBase.db"))
     app.run(debug=True)
 
 

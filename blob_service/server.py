@@ -74,7 +74,7 @@ def routeApp(app, DATABASE):
             return make_response(f"User doesn't have write permission over this blob", 401)
 
         try:
-            res_db = DATABASE.delete_blob(blob_id)
+            DATABASE.delete_blob(blob_id)
         except WrongBlobId:
             return make_response(f"Blob not found", 404)
 

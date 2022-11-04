@@ -33,8 +33,9 @@ class WrongUserId(Exception):
 class DataBase:
     '''Implements operations about Blob'''
 
-    def __init__(self):
-        self.location = "./dataBase.db"
+    def __init__(self, location):
+        self.location = location
+        #self.location = "./dataBase.db"
 
     def get_blob(self, blob_id):
         con = sqlite3.connect(self.location)
@@ -67,6 +68,7 @@ class DataBase:
         con.commit()
 
     #Borrar?
+    '''
     def change_blob(self, blob_id, blob_location):
         con = sqlite3.connect(self.location)
         cur = con.cursor()
@@ -82,6 +84,7 @@ class DataBase:
         cur.execute("UPDATE OR IGNORE blob SET blob_location = ? WHERE blob_id = ?", (blob_location, blob_id,))
 
         con.commit()
+    '''
 
     def delete_blob(self, blob_id):
         con = sqlite3.connect(self.location)
@@ -93,8 +96,7 @@ class DataBase:
         result = cur.fetchall()
 
         if not result:
-            #raise BlobIdWrong()
-            return 0
+            raise WrongBlobId()
 
         cur.execute("DELETE FROM blob WHERE blob_id = ?", (blob_id,))
         

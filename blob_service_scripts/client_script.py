@@ -12,7 +12,7 @@ def main():
     #Test new_blob
     b = client.new_blob("client_files/prueba_subir_cliente.txt", '2')
 
-    client.remove_blob('611', '2')
+    #client.remove_blob('611', '2')
 
     #Test get_blob
     #b = client.get_blob('2', '2')
