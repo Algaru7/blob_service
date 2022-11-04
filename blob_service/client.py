@@ -142,9 +142,14 @@ class Blob:
         if result.getcode()!= 200:
             raise DataBaseError(f'Unexpected status code: {result.getcode()}.')
 
-        with result, open(f"../client_files/{local_filename}", 'wb') as out_file:
-            shutil.copyfileobj(result, out_file)
-
+        try:
+            with result, open(f"./client_files/{local_filename}", 'wb') as out_file:
+                shutil.copyfileobj(result, out_file)
+        except FileNotFoundError:
+            open(f"./client_files/{local_filename}", 'w')
+            with result, open(f"./client_files/{local_filename}", 'wb') as out_file:
+                shutil.copyfileobj(result, out_file)
+        
     def refresh_from(self, local_filename):
         '''Reemplaza el blob por el contenido del fichero local'''
         if not isinstance(local_filename, str):
@@ -170,9 +175,9 @@ class Blob:
         if not isinstance(user, str):
             raise ValueError("user must be a string")
 
-        result = requests.put(f'{self.root}v1/blob/{self.id}/readable_by/{user}',
+        result = requests.put(f'{self.service.root}v1/blob/{self.id}/readable_by/{user}',
                               headers = HEADERS,
-                              timeout = self.timeout
+                              timeout = self.service.timeout
                              )
         
         if result.status_code == 404:
@@ -191,9 +196,9 @@ class Blob:
         if not isinstance(user, str):
             raise ValueError("user must be a string")
 
-        result = requests.delete(f'{self.root}v1/blob/{self.id}/readable_by/{user}',
+        result = requests.delete(f'{self.service.root}v1/blob/{self.id}/readable_by/{user}',
                               headers = HEADERS,
-                              timeout = self.timeout
+                              timeout = self.service.timeout
                              )
         
         if result.status_code == 404:
@@ -210,9 +215,9 @@ class Blob:
         if not isinstance(user, str):
             raise ValueError("user must be a string")
 
-        result = requests.put(f'{self.root}v1/blob/{self.id}/writable_by/{user}',
+        result = requests.put(f'{self.service.root}v1/blob/{self.id}/writable_by/{user}',
                               headers = HEADERS,
-                              timeout = self.timeout
+                              timeout = self.service.timeout
                              )
         
         if result.status_code == 404:
@@ -231,9 +236,9 @@ class Blob:
         if not isinstance(user, str):
             raise ValueError("user must be a string")
 
-        result = requests.delete(f'{self.root}v1/blob/{self.id}/writable_by/{user}',
+        result = requests.delete(f'{self.service.root}v1/blob/{self.id}/writable_by/{user}',
                               headers = HEADERS,
-                              timeout = self.timeout
+                              timeout = self.service.timeout
                              )
         
         if result.status_code == 404:

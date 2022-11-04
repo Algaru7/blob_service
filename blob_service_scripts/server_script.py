@@ -12,7 +12,7 @@ from blob_service.database import DataBase
 def main():
     '''Entry point'''
     app = Flask("database")
-    routeApp(app, DataBase("./dataBase.db"))
+    routeApp(app, DataBase("./dataBase.db"), 'http://127.0.0.1:5001/')
     app.run(debug=True)
 
 

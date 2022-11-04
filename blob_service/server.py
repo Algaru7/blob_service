@@ -3,6 +3,7 @@
 from flask import make_response, request, send_from_directory
 
 from blob_service.database import WrongBlobId, BlobIdInUse, WrongUserId
+from blob_service.authService import AuthService, UserNotFound
 
 import os.path
 
@@ -10,7 +11,7 @@ DICT_TOKENS = {"token-prueba": '1'}
 
 def routeApp(app, DATABASE, authServer_url):
 
-    #auth_server = AuthService(authServer_url)
+    auth_server = AuthService(authServer_url) #Prueba
 
     @app.route('/v1/blob/<blob_id>', methods=['PUT'])
     def create_blob(blob_id):
@@ -21,7 +22,10 @@ def routeApp(app, DATABASE, authServer_url):
         if token is None:
             return make_response("Not 'user-token' or 'admin-token' found in header.", 401)
 
-        #Validate token
+        try:
+            user_id = auth_server.user_of_token(token)
+        except UserNotFound:
+            return make_response(f"User token not valid", 401)
 
         if "user" not in request.form:
             return make_response("Missing 'user' param", 400)
@@ -58,12 +62,8 @@ def routeApp(app, DATABASE, authServer_url):
         if token is None:
             return make_response("Not 'user-token' or 'admin-token' found in header.", 401)
 
-        #validate token
-
         if not request.is_json:
             return make_response('Missing JSON', 400)
-        if "user" not in request.get_json():
-            return make_response('Missing "user" key', 400)
 
         try:
             res = DATABASE.get_blob(blob_id)
@@ -71,8 +71,12 @@ def routeApp(app, DATABASE, authServer_url):
         except WrongBlobId:
             return make_response("Blob not found.", 404)
         
-        user = request.get_json()["user"]
-        if not DATABASE.has_wPermission(user, blob_id):
+        try:
+            user_id = auth_server.user_of_token(token)
+        except UserNotFound:
+            return make_response(f"User token not valid", 401)
+        
+        if not DATABASE.has_wPermission(user_id, blob_id):
             return make_response(f"User doesn't have write permission over this blob", 401)
 
         try:
@@ -93,14 +97,12 @@ def routeApp(app, DATABASE, authServer_url):
         if token is None:
             return make_response("Not 'user-token' or 'admin-token' found in header.", 401)
 
-        #Validate token
-
-        if "user" not in request.form:
-            return make_response("Missing 'user' param", 400)
         if "file" not in request.files:
             return make_response("Missing 'file' param", 400)
-
-        user = request.form["user"]
+        try:
+            user_id = auth_server.user_of_token(token)
+        except UserNotFound:
+            return make_response(f"User token not valid", 401)
 
         try:
             res = DATABASE.get_blob(blob_id)
@@ -108,7 +110,7 @@ def routeApp(app, DATABASE, authServer_url):
         except WrongBlobId:
             return make_response("Blob not found.", 404)
 
-        if not DATABASE.has_wPermission(user, blob_id):
+        if not DATABASE.has_wPermission(user_id, blob_id):
             return make_response("User does not have writable permissions over this blob.", 401)
 
         file = request.files['file']     
@@ -125,15 +127,13 @@ def routeApp(app, DATABASE, authServer_url):
         if token is None:
             return make_response("Not 'user-token' or 'admin-token' found in header.", 401)
 
-        #Validate token
-
-        if "user" not in request.args:
-            return make_response('Missing "user" param', 400)
-
-        user = request.args["user"]
+        try:
+            user_id = auth_server.user_of_token(token)
+        except UserNotFound:
+            return make_response(f"User token not valid", 401)
 
         try:
-            if not DATABASE.has_rPermission(user, blob_id):
+            if not DATABASE.has_rPermission(user_id, blob_id):
                 return make_response(f"User has not readable permissions over this blob", 401)
         except WrongBlobId:
             return make_response("Blob not found", 404)
@@ -158,14 +158,15 @@ def routeApp(app, DATABASE, authServer_url):
         if token is None:
             return make_response("Not 'user-token' or 'admin-token' found in header.", 401)
 
-        #validate token
-
         if not request.is_json:
             return make_response('Missing JSON', 400)
 
-        #token_id = AuthService.user_of_token(token)
+        try:
+            user_token = auth_server.user_of_token(token)
+        except UserNotFound:
+            return make_response(f"User token not valid", 401)
 
-        if not DATABASE.has_wPermission(token_id, blob_id):
+        if not DATABASE.has_wPermission(user_token, blob_id):
             return make_response(f"User doesn't have writable_by permission.", 404)
 
         if DATABASE.has_wPermission(user, blob_id):
@@ -187,14 +188,15 @@ def routeApp(app, DATABASE, authServer_url):
         if token is None:
             return make_response("Not 'user-token' or 'admin-token' found in header.", 401)
 
-        #validate token
-
         if not request.is_json:
             return make_response('Missing JSON', 400)
 
-        #token_id = AuthService.user_of_token(token)
+        try:
+            user_token = auth_server.user_of_token(token)
+        except UserNotFound:
+            return make_response(f"User token not valid", 401)
 
-        if not DATABASE.has_wPermission(token_id, blob_id):
+        if not DATABASE.has_wPermission(user_token, blob_id):
             return make_response(f"User doesn't have writable_by permission.", 404)
 
         try:
@@ -202,7 +204,7 @@ def routeApp(app, DATABASE, authServer_url):
         except WrongBlobId:
             return make_response(f"Blob not found", 404)
 
-        return make_response(f"Removed writable_by permission to {user} for {blob_id}", 200)
+        return make_response(f"Removed writable_by permission to {user} for {blob_id}", 204)
 
     @app.route('/v1/blob/<blob_id>/readable_by/<user>', methods=['PUT'])
     def add_rPermission_blob(blob_id, user):
@@ -213,14 +215,15 @@ def routeApp(app, DATABASE, authServer_url):
         if token is None:
             return make_response("Not 'user-token' or 'admin-token' found in header.", 401)
 
-        #validate token
-
         if not request.is_json:
             return make_response('Missing JSON', 400)
 
-        #token_id = AuthService.user_of_token(token)
+        try:
+            user_token = auth_server.user_of_token(token)
+        except UserNotFound:
+            return make_response(f"User token not valid", 401)
 
-        if not DATABASE.has_wPermission(token_id, blob_id):
+        if not DATABASE.has_wPermission(user_token, blob_id):
             return make_response(f"User doesn't have writable_by permission.", 404)
 
         if DATABASE.has_rPermission(user, blob_id):
@@ -242,14 +245,15 @@ def routeApp(app, DATABASE, authServer_url):
         if token is None:
             return make_response("Not 'user-token' or 'admin-token' found in header.", 401)
 
-        #validate token
-
         if not request.is_json:
             return make_response('Missing JSON', 400)
 
-        #token_id = AuthService.user_of_token(token)
+        try:
+            user_token = auth_server.user_of_token(token)
+        except UserNotFound:
+            return make_response(f"User token not valid", 401)
 
-        if not DATABASE.has_wPermission(token_id, blob_id):
+        if not DATABASE.has_wPermission(user_token, blob_id):
             return make_response(f"User doesn't have writable_by permission.", 404)
 
         try:
@@ -257,4 +261,4 @@ def routeApp(app, DATABASE, authServer_url):
         except WrongBlobId:
             return make_response(f"Blob not found", 404)
 
-        return make_response(f"Removed readable_by permission to {user} for {blob_id}", 200)
+        return make_response(f"Removed readable_by permission to {user} for {blob_id}", 204)
