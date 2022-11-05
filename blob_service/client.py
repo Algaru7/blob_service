@@ -11,7 +11,7 @@ import urllib.request
 import shutil
 
 FILEPATH = "resourcesDB/dataBase.db"
-HEADERS = {"content-type": "application/json", "user-token": "token-prueba"}
+HEADERS = {"content-type": "application/json"}
 
 class DataBaseError(Exception):
     '''Error caused by wrong responses from server'''
@@ -45,7 +45,7 @@ class BlobService:
         
         blob_id = str(random.randint(1, 1000))
         m_encoder = MultipartEncoder(fields={"user": f'{user}', "file": (file_name, file_stream, 'text/plain')})
-        result = requests.put(f'{self.root}v1/blob/{blob_id}', data=m_encoder, headers={'content-type': m_encoder.content_type, 'user-token': 'token-prueba'})
+        result = requests.put(f'{self.root}v1/blob/{blob_id}', data=m_encoder, headers={'content-type': m_encoder.content_type, 'user-token': self.token})
         file_stream.close()
 
         if result.status_code != 200:
@@ -163,7 +163,7 @@ class Blob:
                               timeout = self.service.timeout
                              )
         
-        if result.status_code != 200:
+        if result.status_code != 200 and result.status_code != 204:
             raise DataBaseError(f'{result.text}')
 
 
@@ -191,7 +191,7 @@ class Blob:
                               timeout = self.service.timeout
                              )
         
-        if result.status_code != 200:
+        if result.status_code != 200 and result.status_code != 204:
             raise DataBaseError(f'{result.text}')
 
 

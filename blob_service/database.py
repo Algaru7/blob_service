@@ -35,7 +35,6 @@ class DataBase:
 
     def __init__(self, location):
         self.location = location
-        #self.location = "./dataBase.db"
 
     def get_blob(self, blob_id):
         con = sqlite3.connect(self.location)

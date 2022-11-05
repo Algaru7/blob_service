@@ -7,9 +7,9 @@ from blob_service.authService import AuthService, UserNotFound
 
 import os.path
 
-def routeApp(app, DATABASE, authServer_url):
+def routeApp(app, DATABASE, authServer_url, blob_storage):
 
-    auth_server = AuthService(authServer_url) #Prueba
+    auth_server = AuthService(authServer_url)
 
     @app.route('/v1/blob/<blob_id>', methods=['PUT'])
     def create_blob(blob_id):
@@ -33,7 +33,7 @@ def routeApp(app, DATABASE, authServer_url):
             return make_response(f"User token different to user", 401)
 
         user = request.form["user"]
-        blob_location = f'./server_files/blob_{blob_id}.txt'
+        blob_location = f'./{blob_storage}/blob_{blob_id}.txt'
 
         try:
             DATABASE.create_blob(blob_id, blob_location)
@@ -75,22 +75,25 @@ def routeApp(app, DATABASE, authServer_url):
 
         if user != user_token:
             return make_response(f"User token different to user", 401)
-        
-        if not DATABASE.has_wPermission(user_token, blob_id):
-            return make_response(f"User doesn't have write permission over this blob", 401)
 
         try:
             res = DATABASE.get_blob(blob_id)
             blob_location = res[1]
         except WrongBlobId:
             return make_response("Blob not found.", 404)
+        
+        if not DATABASE.has_wPermission(user_token, blob_id):
+            return make_response(f"User doesn't have write permission over this blob", 401)
 
         try:
             DATABASE.delete_blob(blob_id)
         except WrongBlobId:
             return make_response(f"Blob not found", 404)
             
-        os.remove(blob_location)
+        try:
+            os.remove(blob_location)
+        except FileNotFoundError:
+            return make_response(f"Blob {blob_id} deleted correctly from db but file was not found", 200)
 
         return make_response(f"Blob {blob_id} deleted correctly", 200)
 
