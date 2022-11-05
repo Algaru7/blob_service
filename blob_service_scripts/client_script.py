@@ -12,23 +12,31 @@ from blob_service.client import BlobService, Blob
 Usuario:token = '1':'token-admin';'2':'token-prueba '''
 
 def main():
-    client = BlobService('http://127.0.0.1:5000/')
+    client = BlobService('http://127.0.0.1:5000/', "token-admin")
+
+    b = client.get_blob('13', '1')
+    print(b)
+    #b.refresh_from('client_files/prueba_subir_cliente.txt')
+    b.revoke_read_permission_to('1')
+
+
+
 
     #Test new_blob
     #Code 200
-    b = client.new_blob("client_files/prueba_subir_cliente.txt", '1')
+    #b = client.new_blob("client_files/prueba_subir_cliente.txt", '1')
 
     #Code 401
     '''Al cambiar la user-token, esta no se encuentra en el diccionario de auth y queda
        invalida'''
     
     '''Si el dueño de la user-token no tiene permisos de lectura'''
-    b = client.new_blob("client_files/prueba_subir_cliente.txt", '1')
+    #b = client.new_blob("client_files/prueba_subir_cliente.txt", '1')
 
-    b = client.get_blob('379', '1')
+    #b = client.get_blob('379', '1')
     #b.revoke_read_permission_to('1')
 
-    b.dump_to('prueba_subir_cliente.txt')
+    #b.dump_to('prueba_subir_cliente.txt')
 
     #client.remove_blob('611', '2')
 

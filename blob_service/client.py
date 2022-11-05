@@ -24,11 +24,13 @@ class DataBaseError(Exception):
 class BlobService:
     '''Cliente de acceso al servicio de blobbing'''
 
-    def __init__(self, uri, timeout=120):
+    def __init__(self, uri, token, timeout=120):
         self.root = uri
         if not self.root.endswith('/'):
             self.root = f'{self.root}/'
+        self.token = token
         self.timeout = timeout
+        HEADERS['user-token'] = token
 
     def new_blob(self, local_filename, user): #user es su id en la tabla user o es un username que es unico?
         '''Crea un nuevo blob usando el usuario establecido'''
@@ -46,12 +48,8 @@ class BlobService:
         result = requests.put(f'{self.root}v1/blob/{blob_id}', data=m_encoder, headers={'content-type': m_encoder.content_type, 'user-token': 'token-prueba'})
         file_stream.close()
 
-        if result.status_code == 404:
-            raise DataBaseError(f"Blob '{self.id}' does not exists.")
-        if result.status_code == 401:
-            raise DataBaseError(f"User is not authorized.")
         if result.status_code != 200:
-            raise DataBaseError(f'Unexpected status code: {result.content}')
+            raise DataBaseError(f'{result.text}')
 
         b = Blob(blob_id, user, self)
         return b
@@ -68,12 +66,8 @@ class BlobService:
                               timeout = self.timeout
                              )
 
-        if result.status_code == 404:
-            raise DataBaseError(f"Blob '{blob_id}' does not exists.")
-        if result.status_code == 401:
-            raise DataBaseError(f"User is not authorized.")
         if result.status_code != 200:
-            raise DataBaseError(f'Unexpected status code: {result.status_code}.')
+            raise DataBaseError(f'{result.text}')
 
         
         b = Blob(blob_id, user, self)
@@ -93,12 +87,8 @@ class BlobService:
                               timeout = self.timeout
                              )
 
-        if result.status_code == 404:
-            raise DataBaseError(f"Blob '{blob_id}' does not exists.")
-        if result.status_code == 401:
-            raise DataBaseError(f"Authentication failed.")
         if result.status_code != 200:
-            raise DataBaseError(f'Unexpected status code: {result.status_code}.')
+            raise DataBaseError(f'{result.text}')
 
 
 class Blob:
@@ -131,23 +121,19 @@ class Blob:
             raise ValueError("blob_id must be a string")
 
         req = urllib.request.Request(f"{self.service.root}v1/blob/{self.id}?user={self.user}")
-        req.add_header('user-token', 'token-prueba')
+        req.add_header('user-token', self.service.token)
 
         result = urllib.request.urlopen(req)
 
-        if result.getcode() == 404:
-            raise DataBaseError(f"Blob '{self.id}' does not exists.")
-        if result.getcode() == 401:
-            raise DataBaseError(f"User is not authorized.")
-        if result.getcode()!= 200:
-            raise DataBaseError(f'Unexpected status code: {result.getcode()}.')
+        if result.getcode() != 200:
+            raise DataBaseError(f'{result.text}')
 
         try:
-            with result, open(f"./client_files/{local_filename}", 'wb') as out_file:
+            with result, open(f"{local_filename}", 'wb') as out_file:
                 shutil.copyfileobj(result, out_file)
         except FileNotFoundError:
-            open(f"./client_files/{local_filename}", 'w')
-            with result, open(f"./client_files/{local_filename}", 'wb') as out_file:
+            open(f"{local_filename}", 'w')
+            with result, open(f"{local_filename}", 'wb') as out_file:
                 shutil.copyfileobj(result, out_file)
         
     def refresh_from(self, local_filename):
@@ -158,17 +144,14 @@ class Blob:
         file_path = os.path.abspath(local_filename)
         file_name = os.path.basename(file_path)
         file_stream = open(file_path, 'rb')
+
         
         m_encoder = MultipartEncoder(fields={"user": f'{self.user}', "file": (file_name, file_stream, 'text/plain')})
-        result = requests.post(f'{self.service.root}v1/blob/{self.id}', data=m_encoder, headers={'content-type': m_encoder.content_type, 'user-token': 'token-prueba'})
+        result = requests.post(f'{self.service.root}v1/blob/{self.id}', data=m_encoder, headers={'content-type': m_encoder.content_type, 'user-token': self.service.token})
         file_stream.close()
 
-        if result.status_code == 404:
-            raise DataBaseError(f"Blob '{self.id}' does not exist.")
-        if result.status_code == 401:
-            raise DataBaseError(f"User is not authorized.")
         if result.status_code != 200:
-            raise DataBaseError(f'Unexpected status code: {result.content}')
+            raise DataBaseError(f'{result.text}')
 
     def add_read_permission_to(self, user):
         '''Permite al usuario dado leer el blob'''
@@ -180,16 +163,9 @@ class Blob:
                               timeout = self.service.timeout
                              )
         
-        if result.status_code == 404:
-            raise DataBaseError(f"Blob '{self.id}' does not exist.")
-        if result.status_code == 401:
-            raise DataBaseError(f"User is not authorized.")
-        if result.status_code == 204:
-            raise DataBaseError(f"User '{user} already has read permission.")
         if result.status_code != 200:
-            raise DataBaseError(f'Unexpected status code: {result.status_code}.')
-        
-        #raise NotImplementedError()
+            raise DataBaseError(f'{result.text}')
+
 
     def revoke_read_permission_to(self, user):
         '''Elimina al usuario dado de la lista de permiso de lectura'''
@@ -201,14 +177,9 @@ class Blob:
                               timeout = self.service.timeout
                              )
         
-        if result.status_code == 404:
-            raise DataBaseError(f"Blob '{self.id}' does not exist or doesn't have read permission.")
-        if result.status_code == 401:
-            raise DataBaseError(f"User is not authorized.")
         if result.status_code != 204:
-            raise DataBaseError(f'Unexpected status code: {result.status_code}.')
+            raise DataBaseError(f'{result.text}')
 
-        #raise NotImplementedError()
 
     def add_write_permission_to(self, user):
         '''Permite al usuario dado escribir el blob'''
@@ -220,16 +191,9 @@ class Blob:
                               timeout = self.service.timeout
                              )
         
-        if result.status_code == 404:
-            raise DataBaseError(f"Blob '{self.id}' does not exist.")
-        if result.status_code == 401:
-            raise DataBaseError(f"User is not authorized.")
-        if result.status_code == 204:
-            raise DataBaseError(f"User '{user} already has write permission.")
         if result.status_code != 200:
-            raise DataBaseError(f'Unexpected status code: {result.status_code}.')
+            raise DataBaseError(f'{result.text}')
 
-        #raise NotImplementedError()
 
     def revoke_write_permission_to(self, user):
         '''Elimina al usuario dado de la lista de permiso de escritura'''
@@ -241,11 +205,5 @@ class Blob:
                               timeout = self.service.timeout
                              )
         
-        if result.status_code == 404:
-            raise DataBaseError(f"Blob '{self.id}' does not exist or doesn't have write permission.")
-        if result.status_code == 401:
-            raise DataBaseError(f"User '{user}' is not authorized.")
         if result.status_code != 204:
-            raise DataBaseError(f'Unexpected status code: {result.status_code}.')
-
-        #raise NotImplementedError()
+            raise DataBaseError(f'{result.text}')
