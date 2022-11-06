@@ -18,10 +18,13 @@ TOKEN_USER2 = 'token-prueba'
 FILE1 = 'client_files/test_file_1.txt'
 FILE2 = 'client_files/test_file_1.txt'
 
+IP = 'http://127.0.0.1'
+PORT = '3002'
+
 def main():
 
     print(f"->We access as user '{USER1}' using its own token '{TOKEN_USER1}'")
-    client = BlobService('http://127.0.0.1:5000/', TOKEN_USER1)
+    client = BlobService(f'{IP}:{PORT}/', TOKEN_USER1)
 
     print(f"\tWe create a new blob with content of {FILE1}")
     blob = client.new_blob(FILE1, USER1)
@@ -32,7 +35,7 @@ def main():
     blob.refresh_from(FILE2)
 
     print(f"\n->We access now with other user ({USER2}) using its own token '{TOKEN_USER1}'")
-    client = BlobService('http://127.0.0.1:5000/', "token-prueba")
+    client = BlobService(f'{IP}:{PORT}/', "token-prueba")
     print("\tWe get the previously created blob")
     blob = client.get_blob(blob.id, USER2)
     print(f"\tWe revoke read and write permissions to other user '{USER1}'")

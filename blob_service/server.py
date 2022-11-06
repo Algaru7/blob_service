@@ -33,7 +33,7 @@ def routeApp(app, DATABASE, authServer_url, blob_storage):
             return make_response(f"User token different to user", 401)
 
         user = request.form["user"]
-        blob_location = f'./{blob_storage}/blob_{blob_id}.txt'
+        blob_location = f'{blob_storage}/blob_{blob_id}'
 
         try:
             DATABASE.create_blob(blob_id, blob_location)

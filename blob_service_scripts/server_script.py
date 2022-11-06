@@ -23,9 +23,11 @@ def main():
     blob_storage = get_blob(args)
     auth_server = get_authServer(args)
     try:
-        user_token = auth_server.user_of_token(token)
+        AuthService(auth_server).user_of_token(token)
     except UserNotFound:
-        return make_response(f"User token not valid", 1)
+        return 1
+
+    print(blob_storage)
 
     
     app = Flask("database")
@@ -77,7 +79,12 @@ def get_database(args):
     '''Gets database path from parser or generates default one'''
     database = args.database_path
     if database is None:
-        database = os.getcwd()
+        try:
+            open("dataBase.db", "r")
+        except FileNotFoundError:
+            open("dataBase.db", "x")
+            os.system('python3 blob_service_scripts/create_db.py')
+        database = os.getcwd() + '/dataBase.db'
         return database
     else:
         if os.path.exists(database) is True:
@@ -105,7 +112,7 @@ def get_blob(args):
 
 def get_authServer(args):
     '''Gets authentication server url'''
-    return AuthService(args.url)
+    return args.url
 
 
 if __name__ == '__main__':

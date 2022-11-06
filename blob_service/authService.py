@@ -47,8 +47,10 @@ class AuthService():
 
     def __init__(self, uri, timeout=120):
         self.root = uri
+
         if not self.root.endswith('/'):
             self.root = f'{self.root}/'
+            
         self.timeout = timeout
 
     def user_of_token(self, token):
