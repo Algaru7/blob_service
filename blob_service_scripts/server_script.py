@@ -25,7 +25,8 @@ def main():
     try:
         AuthService(auth_server).user_of_token(token)
     except UserNotFound:
-        return 1
+        print("Invalid admin token")
+        exit(1)
 
     print(blob_storage)
 
@@ -87,10 +88,11 @@ def get_database(args):
         database = os.getcwd() + '/dataBase.db'
         return database
     else:
-        if os.path.exists(database) is True:
+        extension_db = os.path.splitext(database)[-1]
+        if os.path.exists(database) is True and extension_db == '.db':
             return database
         else:
-            print("Path given for database doesn't exist")
+            print("Path given for database doesn't exist or database not found")
             exit(1)
 
 def get_blob(args):
@@ -104,10 +106,10 @@ def get_blob(args):
         return blob_path
 
     else:
-        if os.path.exists(blob_path) is True:
+        if os.path.exists(blob_path) is True and os.path.isdir(blob_path) is True:
             return blob_path
         else:
-            print("Path given for blob storage doesn't exist")
+            print("Path given for blob storage doesn't exist or isn't a directory")
             exit(1)
 
 def get_authServer(args):
