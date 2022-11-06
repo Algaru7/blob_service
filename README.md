@@ -19,18 +19,29 @@ Install all dependencies:
 pip install -r requirements.txt
 ```
 
-You can launch a server in a terminal:
-```shell
-python3 -m blob_service_scripts.server_script
-```
-
-You can launch a client in a terminal:
-```shell
-python3 -m blob_service_scripts.client_script
-```
-
 You can launch test with _Tox_:
 ```shell
 pip install tox
 tox
+```
+## Server Execution
+
+You can launch a server in a terminal:
+```shell
+python3 -m blob_service_scripts.server_script -u <AuthServer Url>
+```
+### Options for blob server launch:
+ 
+- -p: Indicates port, default *3002*
+- -d: Indicates database path, must finish with **.db**, default *database.db*
+- -a: Admin token
+- -l: IP address, default *0.0.0.0*
+- -s: Indicates path for blob_storage, must be a **directory**, default *storage*
+- -u: URL for AuthenticationServer **OBLIGATORY**
+
+## Client Execution
+
+You can launch a client in a terminal:
+```shell
+python3 -m blob_service_scripts.client_script
 ```
