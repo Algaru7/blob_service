@@ -18,8 +18,8 @@ TOKEN_USER2 = 'token-prueba'
 FILE1 = 'client_files/test_file_1.txt'
 FILE2 = 'client_files/test_file_1.txt'
 
-IP = 'http://127.0.1.22'
-PORT = '1810'
+IP = 'http://127.0.0.0'
+PORT = '3002'
 
 def main():
 
