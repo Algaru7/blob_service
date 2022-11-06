@@ -49,7 +49,7 @@ class BlobService:
         file_stream.close()
 
         if result.status_code != 200:
-            raise DataBaseError(f'{result.text}')
+            raise DataBaseError(f'Error code {result.status_code}: {result.text}')
 
         b = Blob(blob_id, user, self)
         return b
@@ -67,7 +67,7 @@ class BlobService:
                              )
 
         if result.status_code != 200:
-            raise DataBaseError(f'{result.text}')
+            raise DataBaseError(f'Error code {result.status_code}: {result.text}')
 
         
         b = Blob(blob_id, user, self)
@@ -88,7 +88,7 @@ class BlobService:
                              )
 
         if result.status_code != 200:
-            raise DataBaseError(f'{result.text}')
+            raise DataBaseError(f'Error code {result.status_code}: {result.text}')
 
 
 class Blob:
@@ -126,7 +126,7 @@ class Blob:
         result = urllib.request.urlopen(req)
 
         if result.getcode() != 200:
-            raise DataBaseError(f'{result.text}')
+            raise DataBaseError(f'Error code {result.getcode()}: {result.text}')
 
         try:
             with result, open(f"{local_filename}", 'wb') as out_file:
@@ -151,7 +151,7 @@ class Blob:
         file_stream.close()
 
         if result.status_code != 200:
-            raise DataBaseError(f'{result.text}')
+            raise DataBaseError(f'Error code {result.status_code}: {result.text}')
 
     def add_read_permission_to(self, user):
         '''Permite al usuario dado leer el blob'''
@@ -164,7 +164,7 @@ class Blob:
                              )
         
         if result.status_code != 200 and result.status_code != 204:
-            raise DataBaseError(f'{result.text}')
+            raise DataBaseError(f'Error code {result.status_code}: {result.text}')
 
 
     def revoke_read_permission_to(self, user):
@@ -178,7 +178,7 @@ class Blob:
                              )
         
         if result.status_code != 204:
-            raise DataBaseError(f'{result.text}')
+            raise DataBaseError(f'Error code {result.status_code}: {result.text}')
 
 
     def add_write_permission_to(self, user):
@@ -192,7 +192,7 @@ class Blob:
                              )
         
         if result.status_code != 200 and result.status_code != 204:
-            raise DataBaseError(f'{result.text}')
+            raise DataBaseError(f'Error code {result.status_code}: {result.text}')
 
 
     def revoke_write_permission_to(self, user):
@@ -206,4 +206,4 @@ class Blob:
                              )
         
         if result.status_code != 204:
-            raise DataBaseError(f'{result.text}')
+            raise DataBaseError(f'Error code {result.status_code}: {result.text}')

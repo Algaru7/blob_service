@@ -153,6 +153,11 @@ def routeApp(app, DATABASE, authServer_url, blob_storage):
             return make_response(f"User token different to user", 401)
 
         try:
+            DATABASE.get_blob(blob_id)
+        except WrongBlobId:
+            return make_response("Blob not found.", 404)
+
+        try:
             if not DATABASE.has_rPermission(user_id, blob_id):
                 return make_response(f"User has not readable permissions over this blob", 401)
         except WrongBlobId:
@@ -185,6 +190,11 @@ def routeApp(app, DATABASE, authServer_url, blob_storage):
         if not request.is_json:
             return make_response('Missing JSON', 400)
 
+        try:
+            DATABASE.get_blob(blob_id)
+        except WrongBlobId:
+            return make_response("Blob not found.", 404)
+
         if not DATABASE.has_wPermission(user_token, blob_id):
             return make_response(f"User doesn't have writable permission.", 404)
 
@@ -216,6 +226,11 @@ def routeApp(app, DATABASE, authServer_url, blob_storage):
         if not request.is_json:
             return make_response('Missing JSON', 400)
 
+        try:
+            DATABASE.get_blob(blob_id)
+        except WrongBlobId:
+            return make_response("Blob not found.", 404)
+
         if not DATABASE.has_wPermission(user_token, blob_id):
             return make_response(f"User doesn't have writable permission.", 404)
 
@@ -243,6 +258,11 @@ def routeApp(app, DATABASE, authServer_url, blob_storage):
 
         if not request.is_json:
             return make_response('Missing JSON', 400)
+
+        try:
+            DATABASE.get_blob(blob_id)
+        except WrongBlobId:
+            return make_response("Blob not found.", 404)
 
         if not DATABASE.has_wPermission(user_token, blob_id):
             return make_response(f"User doesn't have writable permission.", 404)
@@ -274,6 +294,11 @@ def routeApp(app, DATABASE, authServer_url, blob_storage):
 
         if not request.is_json:
             return make_response('Missing JSON', 400)
+
+        try:
+            DATABASE.get_blob(blob_id)
+        except WrongBlobId:
+            return make_response("Blob not found.", 404)
 
         if not DATABASE.has_wPermission(user_token, blob_id):
             return make_response(f"User doesn't have writable permission.", 404)
