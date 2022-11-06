@@ -96,14 +96,22 @@ class TestDBImplementation(unittest.TestCase):
         db.add_rPermission(BLOB0_ID, USER1_ID)
         self.assertTrue(db.has_rPermission(USER1_ID, BLOB0_ID))
 
-    def test_add_wPermission(self):
+    def test_Permissions(self):
         os.remove(DB_PATH)
         open(DB_PATH, 'a').close()
         os.system('python3 test/create_db.py')
         db = DataBase(DB_PATH)
 
         db.create_blob(BLOB0_ID, BLOB0_LOCATION) 
-        self.assertFalse(db.has_wPermission(USER1_ID, BLOB0_ID))
 
         db.add_wPermission(BLOB0_ID, USER1_ID)
         self.assertTrue(db.has_wPermission(USER1_ID, BLOB0_ID))
+
+        db.add_rPermission(BLOB0_ID, USER1_ID)
+        self.assertTrue(db.has_rPermission(USER1_ID, BLOB0_ID))
+
+        db.remove_wPermission(BLOB0_ID, USER1_ID)
+        self.assertFalse(db.has_wPermission(USER1_ID, BLOB0_ID))
+
+        db.remove_rPermission(BLOB0_ID, USER1_ID)
+        self.assertFalse(db.has_rPermission(USER1_ID, BLOB0_ID))
