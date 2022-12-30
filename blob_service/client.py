@@ -4,7 +4,7 @@
 
 import json
 import requests
-import random
+import uuid
 from requests_toolbelt import MultipartEncoder
 import os.path
 import urllib.request
@@ -42,8 +42,8 @@ class BlobService:
         file_path = os.path.abspath(local_filename)
         file_name = os.path.basename(file_path)
         file_stream = open(file_path, 'rb')
-        
-        blob_id = str(random.randint(1, 1000))
+
+        blob_id = str(uuid.uuid4())
         m_encoder = MultipartEncoder(fields={"user": f'{user}', "file": (file_name, file_stream, 'text/plain')})
         result = requests.put(f'{self.root}v1/blob/{blob_id}', data=m_encoder, headers={'content-type': m_encoder.content_type, 'user-token': self.token})
         file_stream.close()

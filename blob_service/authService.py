@@ -4,7 +4,7 @@
 
 DICCIONARIO = {"token-admin": '1', "token-prueba": '2'}
 
-class UserNotFound(Exception):
+class Unauthorized(Exception):
     '''Error caused by a wrong blob id search'''
     def __init__(self, message='unknown'):
         self.msg = message
