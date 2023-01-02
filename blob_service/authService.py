@@ -7,8 +7,8 @@ import hashlib
 import logging
 import requests
 
-from errors import NotAttached, Unauthorized, ConnectionError, ObjectAlreadyExists
-from constants import ADMIN, ADMIN_TOKEN, USER_TOKEN, DEFAULT_ENCODING,\
+from blob_service.errors import NotAttached, Unauthorized, ConnectionError, ObjectAlreadyExists
+from blob_service.constants import ADMIN, ADMIN_TOKEN, USER_TOKEN, DEFAULT_ENCODING,\
     HASH_PASS, USER, TOKEN
 
 
