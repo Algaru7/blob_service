@@ -6,7 +6,7 @@ cur = con.cursor()
 
 cur.execute("""CREATE TABLE IF NOT EXISTS user (
                     user_id TEXT PRIMARY KEY NOT NULL,
-                    user_name TEXT NOT NULL
+                    user_name TEXT
                );"""
            )
 
@@ -48,6 +48,7 @@ cur.execute("PRAGMA foreign_keys")
 
 cur.execute("INSERT INTO user(user_id, user_name) VALUES ('1', 'Juan')")
 cur.execute("INSERT OR IGNORE INTO user(user_id, user_name) VALUES ('2', 'Pedro')")
+cur.execute("INSERT OR IGNORE INTO user(user_id) VALUES ('admin')")
 #cur.execute("INSERT OR IGNORE INTO blob(blob_id, blob_location) VALUES ('2', 'resourcesBlobs/prueba.txt')")
 #cur.execute("INSERT OR IGNORE INTO writable_by(blob_id, user_id) VALUES ('2', '1')")
 #cur.execute("INSERT OR IGNORE INTO readable_by(blob_id, user_id) VALUES ('2', '2')")

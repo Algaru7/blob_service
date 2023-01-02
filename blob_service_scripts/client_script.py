@@ -11,9 +11,9 @@ from blob_service.client import BlobService, Blob
         -'Pedro' con id '2
 Usuario:token = '1':'token-admin';'2':'token-prueba '''
 
-USER1 = '1'
+USER1 = 'admin'
 USER2 = '2'
-TOKEN_USER1 = 'token-admin'
+TOKEN_USER1 = 'admin-token'
 TOKEN_USER2 = 'token-prueba'
 FILE1 = 'client_files/test_file_1.txt'
 FILE2 = 'client_files/test_file_1.txt'
@@ -34,17 +34,17 @@ def main():
     print(f"\tWe update content of the blob created with content of '{FILE2}'")
     blob.refresh_from(FILE2)
 
-    print(f"\n->We access now with other user ({USER2}) using its own token '{TOKEN_USER2}'")
-    client = BlobService(f'{IP}:{PORT}/', TOKEN_USER2)
+    print(f"\n->We access now with other user ({USER1}) using its own token '{TOKEN_USER1}'")
+    client = BlobService(f'{IP}:{PORT}/', TOKEN_USER1)
     print("\tWe get the previously created blob")
-    blob = client.get_blob(blob.id, USER2)
-    print(f"\tWe revoke read and write permissions to other user '{USER1}'")
-    blob.revoke_read_permission_to(USER1)
-    blob.revoke_write_permission_to(USER1)
+    blob = client.get_blob(blob.id, USER1)
+    print(f"\tWe revoke read and write permissions to other user '{USER2}'")
+    blob.revoke_read_permission_to(USER2)
+    blob.revoke_write_permission_to(USER2)
     print(f"\tWe dump content of blob to {FILE1}")
     blob.dump_to(FILE1)
     print(f"\tWe remove the blob")
-    client.remove_blob(blob.id, USER2)
+    client.remove_blob(blob.id, USER1)
 
 
     

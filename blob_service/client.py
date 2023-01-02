@@ -45,7 +45,7 @@ class BlobService:
 
         blob_id = str(uuid.uuid4())
         m_encoder = MultipartEncoder(fields={"user": f'{user}', "file": (file_name, file_stream, 'text/plain')})
-        result = requests.put(f'{self.root}v1/blob/{blob_id}', data=m_encoder, headers={'content-type': m_encoder.content_type, 'user-token': self.token})
+        result = requests.put(f'{self.root}v1/blob/{blob_id}', data=m_encoder, headers={'content-type': m_encoder.content_type, 'user-token': self.token, 'admin-token': self.token})
         file_stream.close()
 
         if result.status_code != 200:
@@ -62,7 +62,7 @@ class BlobService:
             raise ValueError("user must be a string")
 
         result = requests.get(f'{self.root}v1/blob/{blob_id}?user={user}',
-                              headers = HEADERS,
+                              headers = {"content-type": "application/json", 'user-token': self.token, 'admin-token': self.token},
                               timeout = self.timeout
                              )
 
@@ -82,7 +82,7 @@ class BlobService:
 
         req_body = req_body = {"user": user}
         result = requests.delete(f'{self.root}v1/blob/{blob_id}',
-                              headers = HEADERS,
+                              headers = {"content-type": "application/json", 'user-token': self.token, 'admin-token': self.token},
                               data = json.dumps(req_body),
                               timeout = self.timeout
                              )
@@ -120,8 +120,9 @@ class Blob:
         if not isinstance(local_filename, str):
             raise ValueError("blob_id must be a string")
 
-        req = urllib.request.Request(f"{self.service.root}v1/blob/{self.id}?user={self.user}")
-        req.add_header('user-token', self.service.token)
+        req = urllib.request.Request(f"{self.service.root}v1/blob/{self.id}?user={self.user}",
+                                     headers={"content-type": "application/json", 'user-token': self.service.token, 'admin-token': self.service.token})
+        #req.add_header()
 
         result = urllib.request.urlopen(req)
 
@@ -147,7 +148,7 @@ class Blob:
 
         
         m_encoder = MultipartEncoder(fields={"user": f'{self.user}', "file": (file_name, file_stream, 'text/plain')})
-        result = requests.post(f'{self.service.root}v1/blob/{self.id}', data=m_encoder, headers={'content-type': m_encoder.content_type, 'user-token': self.service.token})
+        result = requests.post(f'{self.service.root}v1/blob/{self.id}', data=m_encoder, headers={'content-type': m_encoder.content_type, 'user-token': self.service.token, 'admin-token': self.service.token})
         file_stream.close()
 
         if result.status_code != 200:
@@ -159,7 +160,7 @@ class Blob:
             raise ValueError("user must be a string")
 
         result = requests.put(f'{self.service.root}v1/blob/{self.id}/readable_by/{user}',
-                              headers = HEADERS,
+                              headers = {"content-type": "application/json", 'user-token': self.service.token, 'admin-token': self.service.token},
                               timeout = self.service.timeout
                              )
         
@@ -173,7 +174,7 @@ class Blob:
             raise ValueError("user must be a string")
 
         result = requests.delete(f'{self.service.root}v1/blob/{self.id}/readable_by/{user}',
-                              headers = HEADERS,
+                              headers = {"content-type": "application/json", 'user-token': self.service.token, 'admin-token': self.service.token},
                               timeout = self.service.timeout
                              )
         
@@ -187,7 +188,7 @@ class Blob:
             raise ValueError("user must be a string")
 
         result = requests.put(f'{self.service.root}v1/blob/{self.id}/writable_by/{user}',
-                              headers = HEADERS,
+                              headers = {"content-type": "application/json", 'user-token': self.service.token, 'admin-token': self.service.token},
                               timeout = self.service.timeout
                              )
         
@@ -201,7 +202,7 @@ class Blob:
             raise ValueError("user must be a string")
 
         result = requests.delete(f'{self.service.root}v1/blob/{self.id}/writable_by/{user}',
-                              headers = HEADERS,
+                              headers = {"content-type": "application/json", 'user-token': self.service.token, 'admin-token': self.service.token},
                               timeout = self.service.timeout
                              )
         

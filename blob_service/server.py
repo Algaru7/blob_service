@@ -10,8 +10,8 @@ import os.path
 USER_TOKEN = 'user-token'
 ADMIN_TOKEN = 'admin-token'
 ADMIN = 'admin'
-USER = 'USER'
-FILE = 'FILE'
+USER = 'user'
+FILE = 'file'
 
 def routeApp(app, DATABASE, authServer_url, blob_storage):
 
@@ -49,7 +49,7 @@ def routeApp(app, DATABASE, authServer_url, blob_storage):
         except BlobIdInUse:
             return make_response("Blob ID already in use", 400)
 
-        file = request.files[{FILE}]     
+        file = request.files[f'{FILE}']     
         file.save(blob_location)
 
         try:
@@ -123,7 +123,7 @@ def routeApp(app, DATABASE, authServer_url, blob_storage):
         if not DATABASE.has_wPermission(user_token, blob_id):
             return make_response("User does not have writable permissions over this blob.", 401)
 
-        file = request.files[{FILE}]     
+        file = request.files[f'{FILE}']     
         file.save(blob_location)
 
         return make_response("File updated correctly.", 200)

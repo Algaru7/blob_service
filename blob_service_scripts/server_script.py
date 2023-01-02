@@ -11,7 +11,7 @@ from ipaddress import ip_address
 
 from blob_service.server import routeApp
 from blob_service.database import DataBase
-from blob_service.authService import AuthService, UserNotFound
+from blob_service.authService import AuthService, Unauthorized
 
 def main():
     '''Entry point'''
@@ -22,9 +22,8 @@ def main():
     database_path = get_database(args)
     blob_storage = get_blob(args)
     auth_server = get_authServer(args)
-    try:
-        AuthService(auth_server).user_of_token(token)
-    except UserNotFound:
+
+    if not AuthService(auth_server).is_admin(token):
         print("Invalid admin token")
         exit(1)
 
@@ -51,7 +50,7 @@ def get_token(args):
     '''Gets token from parser or generates default one'''
     admin_token = args.admin_token
     if admin_token is None:
-        admin_token = "token-admin"
+        admin_token = "admin-token"
         print(f'Admin token generated: {admin_token}')
         return admin_token
     return admin_token
