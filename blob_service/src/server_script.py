@@ -83,7 +83,7 @@ def get_database(args):
             open("dataBase.db", "r")
         except FileNotFoundError:
             open("dataBase.db", "x")
-            os.system('python3 blob_service_scripts/create_db.py')
+            os.system('python3 create_db.py')
         database = os.getcwd() + '/dataBase.db'
         return database
     else:
