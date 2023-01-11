@@ -4,7 +4,7 @@
     REST access library + client example
 '''
 
-from blob_service.client import BlobService, Blob
+from client import BlobService, Blob
 
 '''Hay 2 usuarios en el sistema:
         -'Juan' con id '1'
@@ -15,8 +15,8 @@ USER1 = 'admin'
 USER2 = '2'
 TOKEN_USER1 = 'admin-token'
 TOKEN_USER2 = 'token-prueba'
-FILE1 = 'client_files/test_file_1.txt'
-FILE2 = 'client_files/test_file_1.txt'
+FILE1 = 'persistence-blob/client_files/test_file_1.txt'
+FILE2 = 'persistence-blob/client_files/test_file_1.txt'
 
 IP = 'http://127.0.0.0'
 PORT = '3002'

@@ -80,11 +80,11 @@ def get_database(args):
     database = args.database_path
     if database is None:
         try:
-            open("dataBase.db", "r")
+            open("/src/persistence-blob/dataBase.db", "r")
         except FileNotFoundError:
-            open("dataBase.db", "x")
+            open("/src/persistence-blob/dataBase.db", "x")
             os.system('python3 create_db.py')
-        database = os.getcwd() + '/dataBase.db'
+        database = os.getcwd() + '/persistence-blob/dataBase.db'
         return database
     else:
         extension_db = os.path.splitext(database)[-1]
@@ -99,7 +99,7 @@ def get_blob(args):
     blob_path = args.blob_storage
     if blob_path is None:
         cwd = os.getcwd()
-        blob_path = os.path.join(cwd, 'storage')
+        blob_path = os.path.join(cwd, 'persistence-blob/storage')
         if not os.path.exists(blob_path):
             os.makedirs(blob_path)
         return blob_path

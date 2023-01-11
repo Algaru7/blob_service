@@ -43,7 +43,7 @@ USER_TOKEN_SIZE = 30
 USER_TOKEN_AGE_INTERVAL = 5.0
 USER_TOKEN_MAX_AGE = 180
 HASH_PASS = 'hash-pass'
-DEFAULT_AUTH_DB = 'users.json'
+DEFAULT_AUTH_DB = '/src/persistence-auth/users.json'
 
 # Keys and values used by BlobDB
 #

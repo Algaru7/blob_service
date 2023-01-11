@@ -1,6 +1,6 @@
 import sqlite3
 
-con = sqlite3.connect('dataBase.db')
+con = sqlite3.connect('persistence-blob/dataBase.db')
 
 cur = con.cursor()
 
