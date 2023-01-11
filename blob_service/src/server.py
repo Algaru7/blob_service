@@ -2,8 +2,8 @@
 
 from flask import make_response, request, send_from_directory
 
-from blob_service.database import WrongBlobId, BlobIdInUse, WrongUserId
-from blob_service.authService import AuthService, Unauthorized
+from database import WrongBlobId, BlobIdInUse, WrongUserId
+from authService import AuthService, Unauthorized
 
 import os.path
 

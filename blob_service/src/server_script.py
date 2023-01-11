@@ -9,9 +9,9 @@ import argparse
 import os
 from ipaddress import ip_address
 
-from blob_service.server import routeApp
-from blob_service.database import DataBase
-from blob_service.authService import AuthService, Unauthorized
+from server import routeApp
+from database import DataBase
+from authService import AuthService, Unauthorized
 
 def main():
     '''Entry point'''
