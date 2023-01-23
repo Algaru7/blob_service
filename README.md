@@ -6,42 +6,24 @@
 -   Luis Javier Horcajada Torres - [LuisJavier.Horcajada\@alu.uclm.es](mailto:LuisJavier.Horcajada@alu.uclm.es)
 
 
-## Execution
+## Build
 
-Create a virtual environment and activate it:
+You can build docker images with
 ```shell
-python3 -m venv .venv
-source .venv/bin/activate
+source build.sh
 ```
 
-Install all dependencies:
-```shell
-pip install -r requirements.txt
-```
+## Run
 
-You can launch test with _Tox_:
+You run docker containers with
 ```shell
-pip install tox
-tox
+source run.sh
 ```
-## Server Execution
-
-You can launch a server in a terminal:
-```shell
-python3 -m blob_service_scripts.server_script -u <AuthServer Url>
-```
-### Options for blob server launch:
- 
-- -p: Indicates port, default *3002*
-- -d: Indicates database path, must finish with **.db**, default *database.db*
-- -a: Admin token
-- -l: IP address, default *0.0.0.0*
-- -s: Indicates path for blob_storage, must be a **directory**, default *storage*
-- -u: URL for AuthenticationServer **OBLIGATORY**
+which will use _persistence/_ as a volume for persistence and will launch an auth and blob server with an admin token 'admin'.
 
 ## Client Execution
 
 You can launch a client in a terminal:
 ```shell
-python3 -m blob_service_scripts.client_script
+python3 blob_service/src/client_server.py
 ```
