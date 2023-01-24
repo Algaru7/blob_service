@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "***build"
+echo "build images"
 docker build --rm -f Dockerfile --tag debian-base .
 
 docker build --rm -f blob_service/Dockerfile --tag debian-blob ./blob_service

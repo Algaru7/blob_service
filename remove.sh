@@ -1,4 +1,4 @@
-echo "***remove"
+echo "stop and remove containers"
 	docker stop blob
 	docker rm -f blob
 
