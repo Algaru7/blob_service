@@ -20,10 +20,3 @@ You run docker containers with
 source run.sh
 ```
 which will use _persistence/_ as a volume for persistence and will launch an auth and blob server with an admin token 'admin'.
-
-## Client Execution
-
-You can launch a client in a terminal:
-```shell
-python3 blob_service/src/client_server.py
-```
