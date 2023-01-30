@@ -1,10 +1,10 @@
 echo "run containers"
 
-docker run -ti -d --name blob --hostname blob -p 3002:3002 -v $PWD/persistence/blob:/src/persistence-blob debian-blob
+docker run -ti -d --name blob --hostname blob -p 3002:3002 -v $PWD/persistence/blob:/src/persistence-blob luisjaa01/servicio-adi:blob
 
-docker run -ti -d --name auth --hostname auth -p 3001:3001 -v $PWD/persistence/auth:/src/persistence-auth debian-auth
+docker run -ti -d --name auth --hostname auth -p 3001:3001 -v $PWD/persistence/auth:/src/persistence-auth luisjaa01/servicio-adi:auth
 
-docker run -ti -d --name dir --hostname dir -p 3003:3003 -v $PWD/persistence/dir:/src/persistence-dir debian-dir
+docker run -ti -d --name dir --hostname dir -p 3003:3003 -v $PWD/persistence/dir:/src/persistence-dir luisjaa01/servicio-adi:dir
 
 
 if docker exec -it -d -w /src/ auth python3 auth_server.py -a admin ; then
