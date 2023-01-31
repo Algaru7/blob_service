@@ -160,7 +160,9 @@ scp -P 2222 <files> <master_name>@localhost:~/
   
 After this we need to give these two files execute permissions using *chmod*:
 
-- chmod +x deploy.sh deployment.yml
+```shell
+chmod +x deploy.sh deployment.yml
+```
   
 We then run the deploy:
 
