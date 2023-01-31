@@ -19,16 +19,12 @@ To configure both options with 8 GB RAM and 2 processors we need to follow this 
 - **Settings**->**System**->**Motherboard**-> *Base_Memory= 8192 MB*
 - **Settings**->**System**->**Processor**-> *Processor(s)= 2*
 
+After this, we need to update each virtual box to the latest packages.
 
 ```shell
 sudo apt update
 sudo apt upgrade
 ```
-
-```shell
-sudo apt install docker.io
-```
-
 ## Setting up the network
 
 We have two options:
@@ -122,3 +118,51 @@ To deploy, we need two files:
 
 - deploy.sh
 - deployment.yml
+
+### If you used bridged adapter
+
+To do this we can use the command *scp*:
+
+```shell
+scp <files> <master_name>@<master_IP>:~/
+```
+- To know the master's virtual box IP you can use the command *ip a*
+  
+After this we need to give these two files execute permissions using *chmod*:
+
+- chmod +x deploy.sh deployment.yml
+  
+We then run the deploy:
+  
+
+```shell
+./deploy.sh
+```
+
+### If you created a NAT
+
+First we need to connect the master virtual box with the "outside" world:
+
+- **File**->**Preferences**->**Networks**-> Select Created Network -> Select Port Forwarding
+
+And then add this:
+
+| Name   | Protocol | Host IP | Host Port | Guest IP      | Guest Port |
+|--------|----------|---------|-----------|---------------|------------|
+| Rule 1 | TCP      | 0.0.0.0 | 2222      | <Master's IP> | 22         |
+
+
+After this we can use the command *scp*:
+
+```shell
+scp -P 2222 <files> <master_name>@localhost:~/
+```
+  
+After this we need to give these two files execute permissions using *chmod*:
+
+- chmod +x deploy.sh deployment.yml
+  
+We then run the deploy:
+
+```shell
+./deploy
