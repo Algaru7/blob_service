@@ -1,1 +1,1 @@
-kubectl apply -f deployment.yml
+microk8s kubectl apply -f deployment.yml
