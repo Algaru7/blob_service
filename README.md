@@ -63,7 +63,7 @@ sudo snap install microk8s --classic
 Since we use Docker for each microservice we need to install it as well.
 
 ```shell
-sudo snap install docker.io
+sudo apt install docker.io
 ```
 
 We need to check if MicroK8s is running on both the worker and the master:
