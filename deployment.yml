@@ -1,0 +1,137 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth
+spec:
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+      - name: auth
+        image: luisjaa01/servicio-adi:auth
+        imagePullPolicy: Always
+        env:
+        - name: ADMIN_TOKEN
+          value: "admin"
+        - name: PORT
+          value: "3001"
+        - name: ADDRESS
+          value: "0.0.0.0"
+        - name: DB_FILE
+          value: "/src/persistence-auth/users.json"
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 3001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth
+spec:
+  selector:
+    app: auth
+  ports:
+  - port: 3001
+    nodePort: 30001
+  type: NodePort
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blob
+spec:
+  selector:
+    matchLabels:
+      app: blob
+  template:
+    metadata:
+      labels:
+        app: blob
+    spec:
+      containers:
+      - name: blob
+        image: luisjaa01/servicio-adi:blob
+        imagePullPolicy: Always
+        env:
+          - name: AUTH_URI
+            value: "http://auth:3001"
+          - name: PORT
+            value: "3002"
+          - name: ADDRESS
+            value: "0.0.0.0"
+          - name: STORAGE
+            value: "/src/persistence-blob/storage"
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 3002
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blob
+spec:
+  selector:
+    app: blob
+  ports:
+  - port: 3002
+    nodePort: 30002
+  type: NodePort
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dir
+spec:
+  selector:
+    matchLabels:
+      app: dir
+  template:
+    metadata:
+      labels:
+        app: dir
+    spec:
+      containers:
+      - name: dir
+        image: luisjaa01/servicio-adi:dir
+        imagePullPolicy: Always
+        env:
+          - name: AUTH_URI
+            value: "http://auth:3001"
+          - name: PORT
+            value: "3003"
+          - name: ADDRESS
+            value: "0.0.0.0"
+          - name: STORAGE
+            value: "directories.json"
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 3003
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dir
+spec:
+  selector:
+    app: dir
+  ports:
+  - port: 3003
+    nodePort: 30003
+  type: NodePort
