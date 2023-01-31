@@ -20,6 +20,14 @@ To configure both options with 8 GB RAM and 2 processors we need to follow this 
 - **Settings**->**System**->**Processor**-> *Processor(s)= 2*
 
 
+```shell
+sudo apt update
+sudo apt upgrade
+```
+
+```shell
+sudo apt install docker.io
+```
 
 ## Setting up the network
 
@@ -76,6 +84,12 @@ If the service is **NOT** running we start it
 ```shell
 microk8s start
 ```
+
+Lastly we need to add each other's IP addresses to /etc/hosts so they can communicate with each other:
+
+- vim /etc/hosts
+- If master add the IP address of the worker and the name
+- If worker add the IP address of the master and the name
 
 ### Master Virtual Box
 
